@@ -1,4 +1,4 @@
-FROM debian:trixie AS builder
+FROM debian:trixie
 WORKDIR /app
 
 ARG VERSION_NAME=4.4.1-stable
@@ -28,3 +28,10 @@ RUN wget -O export.zip -q "https://github.com/godotengine/godot-builds/releases/
   mv -v ~/.local/share/godot/export_templates/${VERSION_TEMPLATES}/templates/*  ~/.local/share/godot/export_templates/${VERSION_TEMPLATES}
 
 CMD [ "/usr/local/bin/godot", "--headless" ]
+
+LABEL org.opencontainers.image.title="godot-dockerhub" \
+      org.opencontainers.image.description="Godot Engine Docker image based on Debian trixie and the latest Godot stable release including export templates." \
+      org.opencontainers.image.authors="SharkyRawr" \
+      org.opencontainers.image.url="https://github.com/SharkyRawr/godot-dockerhub" \
+      org.opencontainers.image.source="https://github.com/SharkyRawr/godot-dockerhub" \
+      org.opencontainers.image.licenses="Apache-2.0"
