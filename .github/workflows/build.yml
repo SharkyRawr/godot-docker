@@ -24,8 +24,8 @@ jobs:
 
     env:
       # To override the image name, set these secrets in the repo settings
-      GHCR_IMAGE: sharkyrawr/godot-dockerhub
-      DOCKERHUB_IMAGE: sophiefox/godot-dockerhub
+      GHCR_IMAGE: ghcr.io/sharkyrawr/godot-dockerhub
+      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-dockerhub
 
     steps:
       - name: Checkout
@@ -46,13 +46,19 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set image/tag metadata (lowercase for GHCR)
+      - name: Docker meta
         id: meta
-        shell: bash
-        run: |
-          echo "ghcr_image=$(echo "$GHCR_IMAGE" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-          echo "dockerhub_image=$(echo "$DOCKERHUB_IMAGE" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-          echo "tag=latest" >> "$GITHUB_OUTPUT"
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.GHCR_IMAGE }}
+            ${{ env.DOCKERHUB_IMAGE }}
+          tags: |
+            latest
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -67,10 +73,9 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/${{ steps.meta.outputs.ghcr_image }}:${{ steps.meta.outputs.tag }}
-            docker.io/${{ steps.meta.outputs.dockerhub_image }}:${{ steps.meta.outputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          provenance: true
+          provenance: mode=max
           sbom: true
