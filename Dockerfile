@@ -1,8 +1,8 @@
 FROM debian:trixie
 WORKDIR /app
 
-ARG VERSION_NAME=4.4.1-stable
-ARG VERSION_TEMPLATES=4.4.1.stable
+ARG VERSION_NAME=4.5-stable
+ARG VERSION_TEMPLATES=4.5.stable
 
 VOLUME [ "/app" ]
 
