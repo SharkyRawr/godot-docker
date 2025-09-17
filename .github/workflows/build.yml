@@ -13,8 +13,8 @@ permissions:
   packages: write
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -79,3 +79,9 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: mode=max
           sbom: true
+
+      - uses: actions/attest-build-provenance@v3
+        with:
+          image: ${{ env.GHCR_IMAGE }}
+          tag: ${{ steps.meta.outputs.tags }}
+          push-to-registry: true
