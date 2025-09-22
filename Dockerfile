@@ -29,9 +29,9 @@ RUN wget -O export.zip -q "https://github.com/godotengine/godot-builds/releases/
 
 CMD [ "/usr/local/bin/godot", "--headless" ]
 
-LABEL org.opencontainers.image.title="godot-dockerhub" \
+LABEL org.opencontainers.image.title="godot-docker" \
       org.opencontainers.image.description="Godot Engine Docker image based on Debian trixie and the latest Godot stable release including export templates." \
       org.opencontainers.image.authors="SharkyRawr" \
-      org.opencontainers.image.url="https://github.com/SharkyRawr/godot-dockerhub" \
-      org.opencontainers.image.source="https://github.com/SharkyRawr/godot-dockerhub" \
+      org.opencontainers.image.url="https://github.com/SharkyRawr/godot-docker" \
+      org.opencontainers.image.source="https://github.com/SharkyRawr/godot-docker" \
       org.opencontainers.image.licenses="Apache-2.0"

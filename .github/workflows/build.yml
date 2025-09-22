@@ -26,8 +26,8 @@ jobs:
 
     env:
       # To override the image name, set these secrets in the repo settings
-      GHCR_IMAGE: ghcr.io/sharkyrawr/godot-dockerhub
-      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-dockerhub
+      GHCR_IMAGE: ghcr.io/sharkyrawr/godot-docker
+      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-docker
 
     steps:
       - name: Checkout
