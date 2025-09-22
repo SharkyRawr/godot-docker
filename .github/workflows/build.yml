@@ -11,6 +11,8 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,8 +26,8 @@ jobs:
 
     env:
       # To override the image name, set these secrets in the repo settings
-      GHCR_IMAGE: ghcr.io/sharkyrawr/godot-dockerhub
-      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-dockerhub
+      GHCR_IMAGE: ghcr.io/sharkyrawr/godot-docker
+      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-docker
 
     steps:
       - name: Checkout
@@ -82,6 +84,6 @@ jobs:
 
       - uses: actions/attest-build-provenance@v3
         with:
-          image: ${{ env.GHCR_IMAGE }}
-          tag: ${{ steps.meta.outputs.tags }}
+          subject-name: ${{ env.GHCR_IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
