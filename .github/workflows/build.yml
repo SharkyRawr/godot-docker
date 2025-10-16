@@ -21,8 +21,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Only build & push on main branch pushes (not PRs)
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Only build & push on main branch pushes (not PRs) or manual triggers
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
 
     env:
       # To override the image name, set these secrets in the repo settings
