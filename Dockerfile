@@ -59,8 +59,8 @@ RUN export dpkgArch=$(dpkg --print-architecture) && echo "ARCH=$dpkgArch" && \
 
 RUN unzip -q godot.zip && \
     rm godot.zip && \
-    mv Godot* /usr/local/bin/godot && \
-    chmod +x /usr/local/bin/godot
+    chmod +x Godot* && \
+    mv Godot* /usr/local/bin/godot
 
 # Download export templates
 RUN if [ "${EDITION}" = "_mono" ]; then \
