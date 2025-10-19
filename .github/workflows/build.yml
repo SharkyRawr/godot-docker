@@ -24,10 +24,22 @@ jobs:
     # Only build & push on main branch pushes (not PRs) or manual triggers
     if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
 
+    strategy:
+      matrix:
+        edition: ['', '_mono']
+        include:
+          - edition: ''
+            suffix: ''
+            edition_name: 'standard'
+          - edition: '_mono'
+            suffix: '-mono'
+            edition_name: 'mono'
+
     env:
       # To override the image name, set these secrets in the repo settings
       GHCR_IMAGE: ghcr.io/sharkyrawr/godot-docker
       DOCKERHUB_IMAGE: docker.io/sophiefox/godot-docker
+      GODOT_VERSION: 4.5.1
 
     steps:
       - name: Checkout
@@ -56,11 +68,14 @@ jobs:
             ${{ env.GHCR_IMAGE }}
             ${{ env.DOCKERHUB_IMAGE }}
           tags: |
-            latest
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=sha
+            type=raw,value=latest${{ matrix.suffix }}
+            type=raw,value=${{ env.GODOT_VERSION }}${{ matrix.suffix }}
+            type=raw,value=${{ env.GODOT_VERSION }}-${{ matrix.edition_name }}
+            type=ref,event=branch,suffix=${{ matrix.suffix }}
+            type=ref,event=pr,suffix=${{ matrix.suffix }}
+            type=sha,suffix=${{ matrix.suffix }}
+          flavor: |
+            latest=false
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -73,14 +88,17 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/386,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.edition_name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.edition_name }}
           provenance: mode=max
           sbom: true
+          build-args: |
+            EDITION=${{ matrix.edition }}
+            VERSION=${{ env.GODOT_VERSION }}
 
       - uses: actions/attest-build-provenance@v3
         with:
