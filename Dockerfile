@@ -1,4 +1,4 @@
-FROM debian:trixie
+FROM debian:trixie-slim
 WORKDIR /app
 
 # Standard/Mono edition selection
@@ -9,7 +9,8 @@ ARG VERSION=4.5.1
 ARG VERSION_NAME=${VERSION}-stable${EDITION}
 ARG BASE_URL=https://github.com/godotengine/godot-builds/releases/download/${VERSION}-stable
 
-ENV EDITION=${EDITION}
+ENV EDITION=${EDITION} \
+    GODOT_VERSION=${VERSION}
 
 RUN if [ "${EDITION}" = "_mono" ] || [ "${EDITION}" = "" ] ; then \
       echo "Using edition: ${EDITION}"; \
@@ -24,6 +25,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     ca-certificates \
     libx11-6 \
+    libxcursor1 \
+    libxinerama1 \
+    libxrandr2 \
+    libxi6 \
+    libgl1 \
     libfontconfig1 \
     xz-utils \
     zstd && \
@@ -69,6 +75,9 @@ RUN if [ "${EDITION}" = "_mono" ]; then \
     mv ~/.local/share/godot/export_templates/${TEMPLATES_DIR}/templates/* ~/.local/share/godot/export_templates/${TEMPLATES_DIR}/ && \
     rmdir ~/.local/share/godot/export_templates/${TEMPLATES_DIR}/templates && \
     rm export.zip
+
+# Verify installation
+RUN /usr/local/bin/godot --version
 
 CMD [ "/usr/local/bin/godot", "--headless" ]
 
