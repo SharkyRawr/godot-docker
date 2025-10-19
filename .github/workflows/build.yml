@@ -118,18 +118,11 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      # Attest each individual platform build
+      # Only attest GHCR since that's what we pushed during build
       - name: Attest build provenance (GHCR)
         uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.GHCR_IMAGE }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
-
-      - name: Attest build provenance (Docker Hub)
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-name: ${{ env.DOCKERHUB_IMAGE }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
