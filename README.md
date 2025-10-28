@@ -15,10 +15,9 @@
 
 ## Available Images
 
-Images are published to both GitHub Container Registry and Docker Hub:
+Images are published to GitHub Container Registry:
 
 - **GitHub Container Registry:** `ghcr.io/sharkyrawr/godot-docker`
-- **Docker Hub:** `docker.io/sophiefox/godot-docker`
 
 ### Tags
 
@@ -206,7 +205,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [Godot Engine](https://godotengine.org/) (Official)
 - [Godot Documentation](https://docs.godotengine.org/) (Official)
 - [GitHub Repository](https://github.com/SharkyRawr/godot-docker)
-- [Docker Hub](https://hub.docker.com/r/sophiefox/godot-docker)
 
 ## Acknowledgments
 

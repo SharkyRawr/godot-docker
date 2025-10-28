@@ -46,9 +46,7 @@ jobs:
             platform_tag: 'armv7'
 
     env:
-      # To override the image name, set these secrets in the repo settings
       GHCR_IMAGE: ghcr.io/sharkyrawr/godot-docker
-      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-docker
       GODOT_VERSION: 4.5.1
 
     steps:
@@ -64,30 +62,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.GHCR_IMAGE }}
-            ${{ env.DOCKERHUB_IMAGE }}
-          tags: |
-            type=raw,value=latest${{ matrix.suffix }}-${{ matrix.platform_tag }}
-            type=raw,value=${{ env.GODOT_VERSION }}${{ matrix.suffix }}-${{ matrix.platform_tag }}
-          flavor: |
-            latest=false
 
       - name: Build and push by digest
         id: build
@@ -118,8 +97,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      # Only attest GHCR since that's what we pushed during build
-      - name: Attest build provenance (GHCR)
+      - name: Attest build provenance
         uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.GHCR_IMAGE }}
@@ -144,7 +122,6 @@ jobs:
 
     env:
       GHCR_IMAGE: ghcr.io/sharkyrawr/godot-docker
-      DOCKERHUB_IMAGE: docker.io/sophiefox/godot-docker
       GODOT_VERSION: 4.5.1
 
     steps:
@@ -165,19 +142,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ env.GHCR_IMAGE }}
-            ${{ env.DOCKERHUB_IMAGE }}
+          images: ${{ env.GHCR_IMAGE }}
           tags: |
             type=raw,value=latest${{ matrix.suffix }}
             type=raw,value=${{ env.GODOT_VERSION }}${{ matrix.suffix }}
@@ -188,7 +157,7 @@ jobs:
           flavor: |
             latest=false
 
-      - name: Create manifest list and push (GHCR)
+      - name: Create manifest list and push
         working-directory: /tmp/digests/${{ matrix.edition_name }}
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
@@ -196,18 +165,6 @@ jobs:
         env:
           DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
 
-      - name: Create manifest list and push (Docker Hub)
-        working-directory: /tmp/digests/${{ matrix.edition_name }}
-        run: |
-          docker buildx imagetools create $(jq -cr '.tags | map(sub("^${{ env.GHCR_IMAGE }}"; "${{ env.DOCKERHUB_IMAGE }}") | "-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.GHCR_IMAGE }}@sha256:%s ' *)
-        env:
-          DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
-
-      - name: Inspect image (GHCR)
+      - name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.GHCR_IMAGE }}:latest${{ matrix.suffix }}
-
-      - name: Inspect image (Docker Hub)
-        run: |
-          docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:latest${{ matrix.suffix }}
