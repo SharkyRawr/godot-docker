@@ -7,7 +7,7 @@
 ## Features
 
 - 🐧 Based on Debian Trixie Slim
-- 🎮 Godot Engine 4.5.1 (both Standard and Mono editions)
+- 🎮 Godot Engine 4.6 (both Standard and Mono editions)
 - 📦 Includes export templates pre-installed
 - 🏗️ Multi-architecture support (amd64, arm64, 386, armv7)
 - 🔄 Ready for CI/CD pipelines
@@ -21,8 +21,11 @@ Images are published to GitHub Container Registry:
 
 ### Tags
 
-- `latest` - Standard edition, latest stable version (4.5.1)
-- `latest-mono` - Mono/.NET edition, latest stable version (4.5.1)
+- `latest` - Standard edition, latest stable version (4.6)
+- `latest-mono` - Mono/.NET edition, latest stable version (4.6)
+- `4.6` - Standard edition, specific version
+- `4.6-mono` - Mono edition, specific version
+- `4.6-standard` - Standard edition, specific version (explicit)
 - `4.5.1` - Standard edition, specific version
 - `4.5.1-mono` - Mono edition, specific version
 - `4.5.1-standard` - Standard edition, specific version (explicit)
@@ -139,7 +142,7 @@ docker build --build-arg VERSION=4.3.0 -t godot-docker:4.3.0 .
 ## Build Arguments
 
 - `EDITION` - Edition to build (`""` for standard, `"_mono"` for Mono/.NET)
-- `VERSION` - Godot version to install (default: `4.5.1`)
+- `VERSION` - Godot version to install (default: `4.6`)
 
 ## Architecture Support
 
